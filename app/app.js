@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const multer = require('multer');  // Aggiunto per gestire il caricamento di file
 const upload = multer({ dest: 'uploads/' });  // Cartella di destinazione per i file
+const ejs = require('ejs');
 const app = express();
 const PORT = 3000;
 
@@ -20,12 +21,15 @@ app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/js', express.static(path.join(__dirname, 'public/js')));
+app.use('/app', express.static(path.join(__dirname, 'app')));
 app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
 
-const db = new sqlite3.Database('users.db');
-const dbSupermarkets = new sqlite3.Database('supermarkets.db');
+const dbFolderPath = path.join(__dirname, 'db');
+const usersDbPath = path.join(dbFolderPath, 'users.db');
+const supermarketsDbPath = path.join(dbFolderPath, 'supermarkets.db');
+
+const db = new sqlite3.Database(usersDbPath);
+const dbSupermarkets = new sqlite3.Database(supermarketsDbPath);
 
 const initDb = () => {
   const initDbScript = fs.readFileSync(path.join(__dirname, 'db', 'init-db.sql'), 'utf8');
@@ -199,14 +203,26 @@ app.get('/supermercato', (req, res) => {
     if (err) {
       res.status(500).send('Internal Server Error');
     } else {
-      res.status(200).send(data);
+      // Inserisci il codice JavaScript nella tua pagina HTML
+      const scriptTag = `<script>const productsData = ${JSON.stringify([])};</script>`;
+      const modifiedData = data.replace('<!--#products-data-->', scriptTag);
+
+      res.status(200).send(modifiedData);
     }
   });
 });
 
 
+
 app.get('/carrello', (req, res) => {
-  
+  const filePath = path.join(__dirname, 'HTML', 'carrello.html');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.status(200).send(data);
+    }
+  });
 });
 
 
@@ -349,10 +365,12 @@ app.post('/save-product', (req, res) => {
       dbSupermarkets.run('COMMIT');
 
       // Reindirizza l'utente alla pagina di benvenuto del supermercato dopo aver salvato il prodotto
-      return res.redirect('/supermarket-welcome');
+      return res.redirect('/supermercato');
     }
   });
 });
+
+// ...
 
 app.get('/get-products', (req, res) => {
   const getProductsQuery = 'SELECT * FROM supermarket_products';
@@ -362,10 +380,14 @@ app.get('/get-products', (req, res) => {
       console.error(err);
       return res.status(500).json({ error: 'Internal Server Error', details: err.message });
     } else {
+      // Invia una risposta JSON
       return res.status(200).json(rows);
     }
   });
 });
+
+// ...
+
 
 
 
