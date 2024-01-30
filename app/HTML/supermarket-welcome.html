@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supermarket Welcome</title>
+  <!-- Includi jQuery -->
+  <link rel="stylesheet" type="text/css" href="/STYLE/style.css">
+  
+<body>
+  <form action="/save-product" method="POST">
+    <label for="productName">Nome Prodotto:</label>
+    <input type="text" id="productName" name="productName">
+    <label for="productCategory">Categoria:</label>
+    <input type="text" id="productCategory" name="productCategory">
+    <label for="productImage">Immagine URL:</label>
+    <input type="text" id="productImage" name="productImage">
+    <label for="productPrice">Prezzo:</label>
+    <input type="text" id="productPrice" name="productPrice">
+    <label for="productDescription">Descrizione:</label>
+    <textarea id="productDescription" name="productDescription"></textarea>
+    <button id="saveProductButton">Salva Prodotto</button>
+  </form> <!-- Chiudi il form correttamente -->
+  
+  <a class="dropdown-item" href="/supermercato">Supermercato</a>
+
+<!-- public/hs/modal.js -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script src="/js/modal.js"></script>
+
+</body>
+
+
+</html>
