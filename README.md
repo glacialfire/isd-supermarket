@@ -1,1 +1,1 @@
-# isd-hotel
+# isd-supermarket
